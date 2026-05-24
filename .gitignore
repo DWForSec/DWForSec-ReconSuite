@@ -2,6 +2,14 @@
 tools guide.txt
 *.guide.txt
 
+# Generated assets (AI images, screenshots, etc.)
+docs/screenshots/
+docs/assets/
+*.png
+*.jpg
+*.webp
+*.gif
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

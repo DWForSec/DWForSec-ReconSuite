@@ -1,3 +1,7 @@
+# Internal guide / spec files
+tools guide.txt
+*.guide.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

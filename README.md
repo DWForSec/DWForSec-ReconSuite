@@ -1,8 +1,30 @@
-# DWForSec-ReconSuite
+<p align="center">
+  <img src="docs/screenshots/help.png" alt="DWForSec-ReconSuite CLI" width="780"/>
+</p>
 
-**Offensive Reconnaissance & Attack Surface Mapping Platform**
+<h1 align="center">DWForSec-ReconSuite</h1>
+<p align="center">
+  <b>Offensive Reconnaissance &amp; Attack Surface Mapping Platform</b><br/>
+  <sub>Async · Modular · 15 Tools · Python Fallbacks · Multi-Format Reports</sub>
+</p>
 
-A modular, async-first offensive recon framework for security researchers, bug bounty hunters, and red team operators. Integrates 15 real security tools with intelligent Python fallbacks — works even with partial tooling.
+<p align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-cyan?style=flat-square"/>
+  <img src="https://img.shields.io/badge/python-3.11+-blue?style=flat-square"/>
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square"/>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey?style=flat-square"/>
+</p>
+
+---
+
+## Overview
+
+DWForSec-ReconSuite is a production-ready offensive reconnaissance framework for security researchers, bug bounty hunters, and red team operators.
+
+- **15 external tools** integrated with intelligent Python fallbacks  
+- **Full async pipeline** — subdomain enumeration → live probing → port scan → crawl → JS analysis → Nuclei → SSL audit  
+- **Multi-format reports** — HTML, Markdown, PDF, JSON, TXT  
+- **Operator-friendly CLI** — simple commands, aliases, interactive menu  
 
 ---
 
@@ -14,22 +36,37 @@ cd DWForSec-ReconSuite
 pip install .
 ```
 
-After install, `dwforsec` is immediately available globally:
+After install, `dwforsec` is available **globally**:
 
-```
+```bash
 dwforsec -h
 ```
 
 ---
 
-## Quick Start
+## Usage
+
+### Full Recon Pipeline
 
 ```bash
-# Full recon pipeline
 dwforsec recon example.com
+```
 
-# With public-only mode (blocks private IP ranges)
-dwforsec recon example.com --public-only
+<p align="center">
+  <img src="docs/screenshots/dashboard.png" alt="Live Scan Dashboard" width="780"/>
+</p>
+
+Automatically runs all 8 phases and saves results to SQLite database with a Scan ID.
+
+---
+
+### All Commands
+
+```bash
+# Full reconnaissance pipeline
+dwforsec recon example.com
+dwforsec recon example.com --public-only    # Block private IP ranges
+dwforsec recon example.com --json           # Machine-readable output
 
 # Nuclei vulnerability scan
 dwforsec nuclei https://example.com
@@ -40,13 +77,16 @@ dwforsec ssl example.com
 # Web crawler
 dwforsec crawl https://example.com
 
-# JS secret & endpoint analysis (file or URL)
+# JavaScript intelligence (file or URL)
 dwforsec js app.js
-dwforsec js https://example.com/assets/main.js --reveal
+dwforsec js https://example.com/assets/main.js
+dwforsec js app.js --reveal                 # Show unmasked secrets
 
-# Generate report from scan
-dwforsec report 1 --format html
-dwforsec report 1 --all          # all formats at once
+# Generate reports
+dwforsec report 1                           # HTML (default)
+dwforsec report 1 --format pdf
+dwforsec report 1 --format md
+dwforsec report 1 --all                     # All formats at once
 
 # Tool manager
 dwforsec tools status
@@ -55,22 +95,18 @@ dwforsec tools install
 
 ### Shorthand Aliases
 
-| Full Command         | Alias                |
-|:---------------------|:---------------------|
-| `dwforsec recon`     | `dwforsec r`         |
-| `dwforsec nuclei`    | `dwforsec n`         |
-| `dwforsec ssl`       | `dwforsec s`         |
-| `dwforsec crawl`     | `dwforsec c`         |
-| `dwforsec js`        | `dwforsec j`         |
-
----
-
-## Interactive Mode
-
-Running `dwforsec` with no arguments launches an interactive selection menu:
-
+```bash
+dwforsec r example.com          # recon
+dwforsec n https://example.com  # nuclei
+dwforsec s example.com          # ssl
+dwforsec c https://example.com  # crawl
+dwforsec j app.js               # js
 ```
-dwforsec
+
+### Interactive Mode
+
+```bash
+dwforsec     # No arguments → interactive menu
 ```
 
 ```
@@ -92,77 +128,101 @@ dwforsec
 
 ## Global Flags
 
-| Flag              | Description                          |
-|:------------------|:-------------------------------------|
-| `--verbose` / `-v`| Verbose output                       |
-| `--json`          | Machine-readable JSON output         |
-| `--quiet` / `-q`  | Suppress banner and decorations      |
-| `--debug`         | Show full stack traces               |
-| `--public-only`   | Block private/local IP scanning      |
+| Flag              | Short | Description                          |
+|:------------------|:------|:-------------------------------------|
+| `--verbose`       | `-v`  | Verbose output                       |
+| `--json`          |       | Machine-readable JSON output         |
+| `--quiet`         | `-q`  | Suppress banner                      |
+| `--debug`         |       | Show full stack traces               |
+| `--public-only`   | `-P`  | Block private/local IP ranges        |
+
+---
+
+## Real-World Workflow
+
+```bash
+# 1. Check which tools are installed
+dwforsec tools status
+
+# 2. Install missing tools (requires Go)
+dwforsec tools install
+
+# 3. Run full recon against a target
+dwforsec recon example.com --public-only
+
+# 4. Analyze a JavaScript file from the crawl results
+dwforsec js https://example.com/static/bundle.js
+
+# 5. Run focused vulnerability scan
+dwforsec nuclei https://example.com
+
+# 6. Audit SSL/TLS configuration
+dwforsec ssl example.com
+
+# 7. Generate all report formats from Scan ID 1
+dwforsec report 1 --all
+```
+
+---
+
+## Report Output
+
+<p align="center">
+  <img src="docs/screenshots/report.png" alt="HTML Report Preview" width="780"/>
+</p>
+
+Reports are saved to `outputs/reports/<format>/`:
+
+| Format | Path |
+|:-------|:-----|
+| HTML   | `outputs/reports/html/dwforsec-report-*.html` |
+| PDF    | `outputs/reports/pdf/dwforsec-report-*.pdf`   |
+| Markdown | `outputs/reports/markdown/dwforsec-report-*.md` |
+| JSON   | `outputs/reports/json/dwforsec-report-*.json` |
+| TXT    | `outputs/reports/txt/dwforsec-report-*.txt`   |
 
 ---
 
 ## Recon Pipeline Phases
 
-When you run `dwforsec recon example.com`, the following phases execute automatically:
-
 ```
-Phase 1   Subfinder + Assetfinder + Amass     → Subdomain enumeration
-Phase 2   HTTPX                               → Live host probing + tech detection
-Phase 3   Naabu + Nmap                        → Port scan + service fingerprint
-Phase 4   Wafw00f                             → WAF detection
-Phase 5   Katana + GAU + Waybackurls          → URL crawling + archive mining
-Phase 6   JS Secret Analyzer                  → API key, JWT, AWS key detection
-Phase 7   Nuclei                              → Vulnerability scanning
-Phase 8   SSLScan                             → TLS/cipher/cert audit
+Phase 1   Subfinder + Assetfinder + Amass     Subdomain enumeration
+Phase 2   HTTPX                               Live host probing + tech detection
+Phase 3   Naabu + Nmap                        Port scan + service fingerprint
+Phase 4   Wafw00f                             WAF detection
+Phase 5   Katana + GAU + Waybackurls          URL crawling + archive mining
+Phase 6   JS Secret Analyzer                 API key, JWT, AWS credential detection
+Phase 7   Nuclei                              Vulnerability scanning
+Phase 8   SSLScan                             TLS protocol + cipher audit
           ↓
-          SQLite database save
+          SQLite database save (async)
           Auto-generated HTML report
 ```
 
-Each phase has a **Python fallback** — the framework remains functional even if external binaries are not installed.
-
----
-
-## Report Formats
-
-```bash
-dwforsec report 1 --format html      # Dark-themed HTML
-dwforsec report 1 --format md        # GitHub Markdown
-dwforsec report 1 --format pdf       # PDF with cover + tables
-dwforsec report 1 --format json      # Machine-readable JSON
-dwforsec report 1 --format txt       # Plain text
-dwforsec report 1 --all              # All formats at once
-```
-
-Reports are saved to `outputs/reports/<format>/`.
+> **Resilience:** Every phase has a Python fallback. The framework runs even if external binaries are missing.
 
 ---
 
 ## Installing External Tools
 
 ```bash
-# Windows
-dwforsec tools install    # runs scripts/install-tools.ps1
+# Windows PowerShell
+dwforsec tools install
 
 # Linux / macOS
-dwforsec tools install    # runs scripts/install-tools.sh
+dwforsec tools install
 ```
 
-Requires **Go** to compile ProjectDiscovery tools. Missing tools are replaced with Python fallbacks automatically.
+Requires **Go** to compile ProjectDiscovery tools (Subfinder, HTTPX, Nuclei, Katana, Naabu).  
+Missing tools are replaced with Python-native fallbacks automatically.
 
 ---
 
 ## Shell Autocomplete
 
 ```bash
-# Bash
 dwforsec --install-completion bash
-
-# Zsh
 dwforsec --install-completion zsh
-
-# PowerShell
 dwforsec --install-completion powershell
 ```
 
@@ -173,26 +233,30 @@ dwforsec --install-completion powershell
 ```
 dwforsec/
 ├── cli/
-│   ├── main.py                 # Entrypoint, interactive menu, aliases
-│   ├── context.py              # Global flag propagation
-│   ├── output.py               # Rich theming & output helpers
-│   └── commands/               # recon, nuclei, ssl, crawl, js, report, tools
-├── core/                       # Config, logging, banner, constants
-├── database/                   # SQLAlchemy async ORM (SQLite)
-├── models/                     # Pydantic schemas
+│   ├── main.py              Entrypoint, interactive menu, aliases
+│   ├── context.py           Global flag propagation
+│   ├── output.py            Rich theming and output helpers
+│   └── commands/            recon, nuclei, ssl, crawl, js, report, tools
+├── core/                    Config, logging, banner, constants
+├── database/                SQLAlchemy async ORM (SQLite / PostgreSQL)
+├── models/                  Pydantic schemas
 ├── services/
-│   ├── recon/                  # 15 tool services (all with Python fallbacks)
-│   ├── parser/                 # Nuclei, Nmap, SSL, HTTPX parsers
-│   └── analyzer/               # JS secrets, SSL weakness, risk classification
-├── reports/                    # HTML, Markdown, PDF, JSON, TXT exporters
-└── utils/                      # subprocess runner, validator, sanitize
+│   ├── recon/               15 tool services (all with Python fallbacks)
+│   ├── parser/              Nuclei, Nmap, SSL, HTTPX output parsers
+│   └── analyzer/            JS secrets, SSL weakness, risk classification
+├── reports/                 HTML, Markdown, PDF, JSON, TXT exporters
+└── utils/                   Subprocess runner, validator, sanitize
 scripts/
-├── install-tools.ps1           # Windows installer
-└── install-tools.sh            # Linux/macOS installer
+├── install-tools.ps1        Windows installer
+└── install-tools.sh         Linux/macOS installer
 ```
 
 ---
 
-## Security Notice
+## License
 
-This framework is intended **strictly for authorized security testing** on assets you own or have explicit written permission to assess. The author assumes no responsibility for misuse.
+[MIT License](LICENSE) © 2025 DWForSec
+
+---
+
+> **Security Notice:** This framework is intended strictly for **authorized security testing** on assets you own or have explicit written permission to assess.

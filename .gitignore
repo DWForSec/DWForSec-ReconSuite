@@ -7,6 +7,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Build / packaging artifacts
+*.egg-info/
+dist/
+build/
+
 # Environments
 .env
 .venv

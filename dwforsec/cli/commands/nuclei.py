@@ -1,43 +1,76 @@
-import typer
+"""
+dwforsec nuclei <target>   |   dwforsec n <target>
+
+Standalone Nuclei vulnerability scanner.
+Falls back gracefully if nuclei binary is not installed.
+"""
 import asyncio
+import typer
 from rich.console import Console
 from rich.table import Table
+
 from dwforsec.services.recon.nuclei_service import run_nuclei
 
-app = typer.Typer(help="Trigger standalone Nuclei vulnerability scanner")
-console = Console()
+app = typer.Typer(
+    help="Nuclei vulnerability scanner",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
 
-@app.command("run")
-def run_vuln(
-    target: str = typer.Argument(..., help="Target URL or domain to scan")
+SEV_STYLE = {
+    "critical": "bold red",
+    "high":     "bold dark_orange",
+    "medium":   "bold yellow",
+    "low":      "bold cyan",
+    "info":     "dim white",
+}
+
+
+@app.command(
+    name="nuclei",
+    help=(
+        "Run Nuclei vulnerability scanner against TARGET.\n\n"
+        "[bold cyan]Examples:[/bold cyan]\n"
+        "  dwforsec nuclei https://example.com\n"
+        "  dwforsec nuclei https://example.com --json\n"
+        "  dwforsec n https://example.com\n"
+    ),
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+def nuclei_cmd(
+    ctx: typer.Context,
+    target: str = typer.Argument(..., help="URL or domain to scan"),
 ):
-    """
-    Executes Nuclei vulnerability scanner on the target.
-    """
-    console.print(f"[bold green]Starting Nuclei Vulnerability Scan on:[/bold green] {target}")
+    obj = ctx.ensure_object(dict)
+    json_out = obj.get("json_output", False)
+    console = Console(highlight=False)
+
+    console.print(f"[bold cyan]›[/bold cyan]  Nuclei scanning [bold white]{target}[/bold white]")
     findings = asyncio.run(run_nuclei(target))
-    
-    if findings:
-        table = Table(title="Nuclei Detections", border_style="cyan")
-        table.add_column("Template ID", style="bold white")
-        table.add_column("Severity", style="bold")
-        table.add_column("Matched URL", style="dim white")
-        
-        for f in findings:
-            sev = f.get("severity", "info").lower()
-            if sev == "critical":
-                sev_styled = "[red]critical[/red]"
-            elif sev == "high":
-                sev_styled = "[orange3]high[/orange3]"
-            elif sev == "medium":
-                sev_styled = "[yellow]medium[/yellow]"
-            elif sev == "low":
-                sev_styled = "[blue]low[/blue]"
-            else:
-                sev_styled = "[grey50]info[/grey50]"
-                
-            table.add_row(f.get("template_id"), sev_styled, f.get("matched_url"))
-            
-        console.print(table)
-    else:
-        console.print("[green]Scan complete. No vulnerabilities detected.[/green]")
+
+    if not findings:
+        console.print("[bold green]✔[/bold green]  No vulnerabilities detected.")
+        return
+
+    if json_out:
+        import json
+        print(json.dumps(findings, indent=2, default=str))
+        return
+
+    t = Table(border_style="cyan", header_style="bold cyan", show_lines=False)
+    t.add_column("Severity",    style="bold", min_width=8)
+    t.add_column("Template ID", min_width=28)
+    t.add_column("Matched",     min_width=40)
+
+    for f in sorted(findings, key=lambda x: ["critical","high","medium","low","info"].index(
+            x.get("severity","info").lower()) if x.get("severity","info").lower() in
+            ["critical","high","medium","low","info"] else 4):
+        sev   = f.get("severity", "info").lower()
+        style = SEV_STYLE.get(sev, "dim white")
+        t.add_row(
+            f"[{style}]{sev.upper()}[/{style}]",
+            f.get("template_id") or "—",
+            (f.get("matched_url") or f.get("host") or "—")[:60],
+        )
+
+    console.print(t)
+    console.print(f"\n[dim]  {len(findings)} finding(s) — run [cyan]dwforsec report[/cyan] to export.[/dim]")

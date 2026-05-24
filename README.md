@@ -1,127 +1,198 @@
 # DWForSec-ReconSuite
 
-**DWForSec-ReconSuite** adalah offensive reconnaissance & attack surface intelligence framework berbasis terminal/CLI untuk security researcher, bug bounty hunter, dan offensive security engineer.
+**Offensive Reconnaissance & Attack Surface Mapping Platform**
 
-Framework ini didesain secara modular, asinkron (*asynchronous-first*), aman (*sanitized argument input*), dan siap produksi (*production-ready*).
-
----
-
-## Fitur Utama
-
-- **Discovery & Enumeration**: Integrasi otomatis dengan Subfinder, Assetfinder, dan Amass.
-- **Service & Port Probing**: Integrasi dengan Naabu, HTTPX, dan Nmap.
-- **WAF & Tech Profiling**: Deteksi otomatis Web Application Firewall (Wafw00f) dan profil teknologi server (WhatWeb).
-- **Crawling & Archive Scraping**: Crawling dinamis via Katana, Gau, Waybackurls, dan Hakrawler.
-- **JS Intelligence & Secret Leak Analyzer**: Pemindaian berkas JavaScript terhadap kebocoran API Keys, JWT tokens, dev/staging URLs, AWS credentials, dsb.
-- **Vulnerability Scanning**: Integrasi dengan Nuclei.
-- **SSL/TLS Auditing**: Audit protokol TLS lemah, cipher lemah, sertifikat kedaluwarsa, dan status HSTS.
-- **Multi-Format Reports**: Ekspor laporan otomatis ke format **HTML** (dark-theme modern), **Markdown**, **PDF**, **JSON**, dan **TXT**.
+A modular, async-first offensive recon framework for security researchers, bug bounty hunters, and red team operators. Integrates 15 real security tools with intelligent Python fallbacks — works even with partial tooling.
 
 ---
 
-## Struktur Proyek
+## Installation
+
+```bash
+git clone https://github.com/DWForSec/DWForSec-ReconSuite.git
+cd DWForSec-ReconSuite
+pip install .
+```
+
+After install, `dwforsec` is immediately available globally:
 
 ```
-DWForSec-ReconSuite/
-├── dwforsec/
-│   ├── cli/
-│   │   ├── main.py
-│   │   └── commands/           # CLI Commands (recon, scan, crawl, jsanalyze, report, tools)
-│   ├── core/                   # Config, logging, banner, constants
-│   ├── services/               # Tool execution & parsers (Subfinder, Nuclei, JS, SSL)
-│   ├── models/                 # Pydantic data schemas
-│   ├── database/               # SQLite DB setup & ORM Models
-│   └── reports/                # Report generation templates & templates (HTML, CSS, PDF)
-├── scripts/                    # Installers (install-tools.ps1, install-tools.sh)
-└── requirements.txt
+dwforsec -h
 ```
 
 ---
 
-## Panduan Penggunaan / Quick Start
-
-### 1. Instalasi Dependensi
-Jalankan perintah berikut untuk menginstal semua dependensi Python:
+## Quick Start
 
 ```bash
-pip install -r requirements.txt
+# Full recon pipeline
+dwforsec recon example.com
+
+# With public-only mode (blocks private IP ranges)
+dwforsec recon example.com --public-only
+
+# Nuclei vulnerability scan
+dwforsec nuclei https://example.com
+
+# SSL/TLS audit
+dwforsec ssl example.com
+
+# Web crawler
+dwforsec crawl https://example.com
+
+# JS secret & endpoint analysis (file or URL)
+dwforsec js app.js
+dwforsec js https://example.com/assets/main.js --reveal
+
+# Generate report from scan
+dwforsec report 1 --format html
+dwforsec report 1 --all          # all formats at once
+
+# Tool manager
+dwforsec tools status
+dwforsec tools install
 ```
 
-### 2. Instalasi Tooling Security (Opsional / Otomatis)
-Gunakan perintah internal suite untuk mengkloning dan mengompilasi semua *binary tools* eksternal (Subfinder, Nuclei, Katana, dsb.):
+### Shorthand Aliases
 
-```bash
-python -m dwforsec.cli.main tools install
-```
-
-Atau jalankan status check untuk melihat tools apa saja yang sudah terdeteksi di system PATH atau direktori lokal:
-
-```bash
-python -m dwforsec.cli.main tools status
-```
-
-*Catatan: Jika binary tools eksternal tidak ditemukan, framework akan secara otomatis beralih menggunakan scanner fallback berbasis Python/Socket.*
+| Full Command         | Alias                |
+|:---------------------|:---------------------|
+| `dwforsec recon`     | `dwforsec r`         |
+| `dwforsec nuclei`    | `dwforsec n`         |
+| `dwforsec ssl`       | `dwforsec s`         |
+| `dwforsec crawl`     | `dwforsec c`         |
+| `dwforsec js`        | `dwforsec j`         |
 
 ---
 
-## Panduan Perintah CLI (Command Guide)
+## Interactive Mode
 
-### 1. Menjalankan Pipeline Pengintaian Penuh
-Menjalankan seluruh pipeline recon (subdomain discovery -> ports -> waf -> crawling -> JS secrets -> Nuclei -> SSL audit -> database save):
+Running `dwforsec` with no arguments launches an interactive selection menu:
 
-```bash
-python -m dwforsec.cli.main recon run example.com
+```
+dwforsec
 ```
 
-Gunakan mode `--public-only` untuk memblokir pemindaian terhadap IP private/internal/localhost:
-
-```bash
-python -m dwforsec.cli.main recon run example.com --public-only
 ```
-
-### 2. Melakukan Pemindaian Kerentanan (Nuclei) Standalone
-```bash
-python -m dwforsec.cli.main scan nuclei run https://example.com
+ Select Operation
+┌────┬──────────────────────────┐
+│ [1]│ Full Recon Pipeline      │
+│ [2]│ Nuclei Vulnerability Scan│
+│ [3]│ SSL / TLS Audit          │
+│ [4]│ Web Crawler              │
+│ [5]│ JS Secret Analysis       │
+│ [6]│ Generate Report          │
+│ [7]│ Tool Status              │
+│ [0]│ Exit                     │
+└────┴──────────────────────────┘
+  Choice [0]: _
 ```
-
-### 3. Melakukan Crawling Website Standalone
-```bash
-python -m dwforsec.cli.main crawl run https://example.com
-```
-
-### 4. Menganalisis File JavaScript (Secret Leaks) Standalone
-Menganalisis berkas lokal:
-```bash
-python -m dwforsec.cli.main jsanalyze file app.js
-```
-
-Menganalisis berkas dari URL:
-```bash
-python -m dwforsec.cli.main jsanalyze url https://example.com/assets/app.js
-```
-
-Tampilkan secret tanpa sensor menggunakan flag `--reveal`:
-```bash
-python -m dwforsec.cli.main jsanalyze file app.js --reveal
-```
-
-### 5. Melakukan Ekspor Laporan
-Setelah pipeline selesai dijalankan, Anda akan mendapatkan `Scan ID` (contoh: `1`). Ekspor data tersebut menjadi format laporan pilihan Anda:
-
-```bash
-# Semua format sekaligus (HTML, Markdown, PDF, JSON, TXT)
-python -m dwforsec.cli.main report generate 1 --all-formats
-
-# Format spesifik
-python -m dwforsec.cli.main report generate 1 --format html
-python -m dwforsec.cli.main report generate 1 --format pdf
-python -m dwforsec.cli.main report generate 1 --format markdown
-```
-
-Laporan akan disimpan secara terstruktur di direktori:
-`outputs/reports/html/`, `outputs/reports/pdf/`, `outputs/reports/markdown/`, dsb.
 
 ---
 
-## Security Warning
-This framework is intended strictly for authorized security testing on assets you own or have explicit permission to assess.
+## Global Flags
+
+| Flag              | Description                          |
+|:------------------|:-------------------------------------|
+| `--verbose` / `-v`| Verbose output                       |
+| `--json`          | Machine-readable JSON output         |
+| `--quiet` / `-q`  | Suppress banner and decorations      |
+| `--debug`         | Show full stack traces               |
+| `--public-only`   | Block private/local IP scanning      |
+
+---
+
+## Recon Pipeline Phases
+
+When you run `dwforsec recon example.com`, the following phases execute automatically:
+
+```
+Phase 1   Subfinder + Assetfinder + Amass     → Subdomain enumeration
+Phase 2   HTTPX                               → Live host probing + tech detection
+Phase 3   Naabu + Nmap                        → Port scan + service fingerprint
+Phase 4   Wafw00f                             → WAF detection
+Phase 5   Katana + GAU + Waybackurls          → URL crawling + archive mining
+Phase 6   JS Secret Analyzer                  → API key, JWT, AWS key detection
+Phase 7   Nuclei                              → Vulnerability scanning
+Phase 8   SSLScan                             → TLS/cipher/cert audit
+          ↓
+          SQLite database save
+          Auto-generated HTML report
+```
+
+Each phase has a **Python fallback** — the framework remains functional even if external binaries are not installed.
+
+---
+
+## Report Formats
+
+```bash
+dwforsec report 1 --format html      # Dark-themed HTML
+dwforsec report 1 --format md        # GitHub Markdown
+dwforsec report 1 --format pdf       # PDF with cover + tables
+dwforsec report 1 --format json      # Machine-readable JSON
+dwforsec report 1 --format txt       # Plain text
+dwforsec report 1 --all              # All formats at once
+```
+
+Reports are saved to `outputs/reports/<format>/`.
+
+---
+
+## Installing External Tools
+
+```bash
+# Windows
+dwforsec tools install    # runs scripts/install-tools.ps1
+
+# Linux / macOS
+dwforsec tools install    # runs scripts/install-tools.sh
+```
+
+Requires **Go** to compile ProjectDiscovery tools. Missing tools are replaced with Python fallbacks automatically.
+
+---
+
+## Shell Autocomplete
+
+```bash
+# Bash
+dwforsec --install-completion bash
+
+# Zsh
+dwforsec --install-completion zsh
+
+# PowerShell
+dwforsec --install-completion powershell
+```
+
+---
+
+## Project Structure
+
+```
+dwforsec/
+├── cli/
+│   ├── main.py                 # Entrypoint, interactive menu, aliases
+│   ├── context.py              # Global flag propagation
+│   ├── output.py               # Rich theming & output helpers
+│   └── commands/               # recon, nuclei, ssl, crawl, js, report, tools
+├── core/                       # Config, logging, banner, constants
+├── database/                   # SQLAlchemy async ORM (SQLite)
+├── models/                     # Pydantic schemas
+├── services/
+│   ├── recon/                  # 15 tool services (all with Python fallbacks)
+│   ├── parser/                 # Nuclei, Nmap, SSL, HTTPX parsers
+│   └── analyzer/               # JS secrets, SSL weakness, risk classification
+├── reports/                    # HTML, Markdown, PDF, JSON, TXT exporters
+└── utils/                      # subprocess runner, validator, sanitize
+scripts/
+├── install-tools.ps1           # Windows installer
+└── install-tools.sh            # Linux/macOS installer
+```
+
+---
+
+## Security Notice
+
+This framework is intended **strictly for authorized security testing** on assets you own or have explicit written permission to assess. The author assumes no responsibility for misuse.

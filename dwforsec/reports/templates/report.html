@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DWForSec Recon Report: {{ target }}</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --border-color: #1f2937;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-color: #3b82f6;
+            --critical: #ef4444;
+            --high: #f97316;
+            --medium: #eab308;
+            --low: #3b82f6;
+            --info: #6b7280;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+            padding: 30px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #60a5fa;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .card-val {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--accent-color);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-critical { background: var(--critical); color: white; }
+        .badge-high { background: var(--high); color: white; }
+        .badge-medium { background: var(--medium); color: black; }
+        .badge-low { background: var(--low); color: white; }
+        .badge-info { background: var(--info); color: white; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #111827;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .finding-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .finding-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background: #030712;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #10b981;
+            font-family: monospace;
+            border: 1px solid #111827;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 class="header-title">DWForSec Recon Report</h1>
+    <p style="color: var(--text-muted); margin-top: 10px;">Target: <strong>{{ target }}</strong> | Scan ID: <code>{{ scan_id }}</code></p>
+    <p style="font-size: 0.9rem; color: #ef4444; font-weight: bold; text-transform: uppercase;">CONFIDENTIAL - OFFENSIVE ASSESSMENT REPORT</p>
+</header>
+
+<div class="container">
+    <h2>Executive Summary</h2>
+    <div class="grid">
+        <div class="card">
+            <div>Total Subdomains</div>
+            <div class="card-val">{{ summary.total_subdomains }}</div>
+        </div>
+        <div class="card">
+            <div>Live Hosts</div>
+            <div class="card-val">{{ summary.live_hosts }}</div>
+        </div>
+        <div class="card">
+            <div>Open Ports</div>
+            <div class="card-val">{{ summary.open_ports }}</div>
+        </div>
+        <div class="card">
+            <div>Critical / High Findings</div>
+            <div class="card-val" style="color: var(--critical);">{{ summary.critical + summary.high }}</div>
+        </div>
+    </div>
+
+    <h2>Discovered Assets</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Subdomain</th>
+                <th>IP Address</th>
+                <th>HTTP Status</th>
+                <th>Web Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in subdomains %}
+            <tr>
+                <td><strong>{{ sub.subdomain }}</strong></td>
+                <td><code>{{ sub.ip_address or 'N/A' }}</code></td>
+                <td><code>{{ sub.status_code or 'N/A' }}</code></td>
+                <td>{{ sub.title or 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Vulnerability Findings</h2>
+    {% if not findings %}
+        <p>No vulnerabilities identified.</p>
+    {% else %}
+        {% for f in findings %}
+        <div class="finding-section">
+            <div class="finding-title">
+                <h3>{{ f.template_id or f.tool }}</h3>
+                <span class="badge badge-{{ f.severity }}">{{ f.severity }}</span>
+            </div>
+            <p><strong>Matched URL/Host:</strong> <code>{{ f.matched_url or f.host }}</code></p>
+            {% if f.description %}
+            <p><strong>Description:</strong> {{ f.description }}</p>
+            {% endif %}
+            {% if f.recommendation %}
+            <p><strong>Remediation:</strong></p>
+            <pre>{{ f.recommendation }}</pre>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <h2>SSL/TLS Invariant Detections</h2>
+    {% if not ssl_findings %}
+        <p>No SSL vulnerabilities detected.</p>
+    {% else %}
+        {% for s in ssl_findings %}
+        <div class="finding-section">
+            <div class="finding-title">
+                <h3>SSL Configuration for {{ s.host }}</h3>
+            </div>
+            <p><strong>TLS Protocol:</strong> <code>{{ s.tls_version or 'N/A' }}</code></p>
+            <p><strong>Certificate Issuer:</strong> <code>{{ s.issuer or 'N/A' }}</code></p>
+            <p><strong>Expiry Date:</strong> <code>{{ s.expiry_date or 'N/A' }}</code></p>
+            {% if s.weak_ciphers %}
+            <p><strong>Weak Ciphers:</strong></p>
+            <pre>{{ s.weak_ciphers }}</pre>
+            {% endif %}
+            {% if s.recommendation %}
+            <p><strong>Remediation:</strong></p>
+            <pre>{{ s.recommendation }}</pre>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <h2>JavaScript Code Intelligence & Secret Leaks</h2>
+    {% if not js_analysis %}
+        <p>No secrets or routing endpoints discovered inside JS source files.</p>
+    {% else %}
+        {% for j in js_analysis %}
+        <div class="finding-section">
+            <h4>File: <a href="{{ j.url }}" style="color: #60a5fa;" target="_blank">{{ j.url }}</a></h4>
+            {% if j.secrets_found %}
+            <p><strong>Secrets Found:</strong></p>
+            <pre>{{ j.secrets_found }}</pre>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<footer style="text-align: center; padding: 40px; color: var(--text-muted); border-top: 1px solid var(--border-color); margin-top: 60px;">
+    Report generated at {{ timestamp }} by DWForSec-ReconSuite.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# DWForSec outputs
+outputs/scans/*
+outputs/reports/*
+outputs/logs/*
+outputs/temp/*
+!outputs/scans/.gitkeep
+!outputs/reports/.gitkeep
+!outputs/logs/.gitkeep
+!outputs/temp/.gitkeep
+
+# Cloned tools
+dwforsec/tools/*
+!dwforsec/tools/.gitkeep

@@ -1,0 +1,937 @@
+Buatkan framework Python terminal-based production-ready bernama:
+
+DWForSec-ReconSuite
+
+Konsep:
+DWForSec-ReconSuite adalah offensive reconnaissance & attack surface intelligence framework berbasis terminal/CLI untuk security researcher, bug bounty hunter, dan offensive security engineer.
+
+Framework ini harus:
+- modular
+- asynchronous
+- scalable
+- production-ready
+- clean architecture
+- modern CLI UX
+- automation-focused
+- backend-oriented
+- real tool execution
+- reporting-focused
+
+Jangan buat web dashboard.
+Fokus:
+- CLI workflow
+- orchestration engine
+- shell automation
+- parsing engine
+- attack surface intelligence
+- reporting system
+
+==================================================
+MAIN FEATURES
+==================================================
+
+Framework harus bisa:
+- menjalankan recon pipeline
+- menjalankan tools security asli
+- parsing output tools
+- crawling target
+- analyze JavaScript/source code
+- detect hidden secrets
+- vulnerability scanning
+- SSL/TLS scanning
+- attack surface mapping
+- generate report multi-format
+- save results
+- support internal/local lab testing
+
+==================================================
+TECH STACK
+==================================================
+
+Gunakan:
+- Python 3.12+
+- asyncio
+- rich
+- typer
+- pydantic
+- SQLAlchemy
+- SQLite default
+- PostgreSQL optional
+- aiofiles
+- httpx
+- loguru
+
+Optional:
+- Docker
+- Redis
+- Celery/RQ
+
+==================================================
+TERMINAL UI STYLE
+==================================================
+
+Gunakan rich untuk:
+- colored tables
+- progress bars
+- animated spinner
+- severity colors
+- findings panels
+- banners
+- live logs
+- scan summaries
+- statistics dashboard
+
+Style:
+- clean
+- professional
+- offensive security aesthetic
+- cyber modern
+- readable
+
+==================================================
+PROJECT STRUCTURE
+==================================================
+
+DWForSec-ReconSuite/
+├── dwforsec/
+│   ├── cli/
+│   │   ├── main.py
+│   │   ├── commands/
+│   │   │   ├── recon.py
+│   │   │   ├── nuclei.py
+│   │   │   ├── ssl.py
+│   │   │   ├── crawl.py
+│   │   │   ├── jsanalyze.py
+│   │   │   ├── report.py
+│   │   │   ├── tools.py
+│   │   │   └── scan.py
+│   │
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── logging.py
+│   │   ├── banner.py
+│   │   └── constants.py
+│   │
+│   ├── services/
+│   │   ├── recon/
+│   │   │   ├── subfinder_service.py
+│   │   │   ├── assetfinder_service.py
+│   │   │   ├── amass_service.py
+│   │   │   ├── httpx_service.py
+│   │   │   ├── naabu_service.py
+│   │   │   ├── nmap_service.py
+│   │   │   ├── nuclei_service.py
+│   │   │   ├── katana_service.py
+│   │   │   ├── gau_service.py
+│   │   │   ├── waybackurls_service.py
+│   │   │   ├── hakrawler_service.py
+│   │   │   ├── sslscan_service.py
+│   │   │   ├── testssl_service.py
+│   │   │   ├── whatweb_service.py
+│   │   │   └── wafw00f_service.py
+│   │   │
+│   │   ├── parser/
+│   │   │   ├── nuclei_parser.py
+│   │   │   ├── nmap_parser.py
+│   │   │   ├── ssl_parser.py
+│   │   │   ├── crawl_parser.py
+│   │   │   └── httpx_parser.py
+│   │   │
+│   │   └── analyzer/
+│   │       ├── js_secret_analyzer.py
+│   │       ├── route_extractor.py
+│   │       ├── ssl_analyzer.py
+│   │       ├── risk_classifier.py
+│   │       └── tech_classifier.py
+│   │
+│   ├── models/
+│   │   ├── target.py
+│   │   ├── scan.py
+│   │   ├── finding.py
+│   │   ├── ssl.py
+│   │   ├── crawl.py
+│   │   └── subdomain.py
+│   │
+│   ├── database/
+│   │   ├── db.py
+│   │   └── models.py
+│   │
+│   ├── reports/
+│   │   ├── base_report.py
+│   │   ├── html_report.py
+│   │   ├── markdown_report.py
+│   │   ├── pdf_report.py
+│   │   ├── json_report.py
+│   │   ├── txt_report.py
+│   │   │
+│   │   ├── templates/
+│   │   │   ├── report.html
+│   │   │   ├── summary.html
+│   │   │   └── finding_card.html
+│   │   │
+│   │   └── static/
+│   │       ├── report.css
+│   │       └── report.js
+│   │
+│   ├── tools/
+│   │
+│   ├── utils/
+│   │   ├── subprocess_runner.py
+│   │   ├── validator.py
+│   │   ├── sanitize.py
+│   │   ├── mask_secret.py
+│   │   ├── command_builder.py
+│   │   ├── file_helpers.py
+│   │   └── concurrency.py
+│   │
+│   └── data/
+│       ├── js_detection_patterns.py
+│       ├── severity_mapping.py
+│       └── nuclei_categories.py
+│
+├── scripts/
+│   ├── install-tools.sh
+│   ├── install-tools.ps1
+│   ├── update-tools.sh
+│   └── run.sh
+│
+├── outputs/
+│   ├── scans/
+│   ├── reports/
+│   │   ├── html/
+│   │   ├── pdf/
+│   │   ├── markdown/
+│   │   ├── json/
+│   │   └── txt/
+│   │
+│   ├── logs/
+│   └── temp/
+│
+├── requirements.txt
+├── pyproject.toml
+├── README.md
+└── .env.example
+
+==================================================
+TOOLS AUTO INSTALL SYSTEM
+==================================================
+
+Framework harus otomatis clone tools ke:
+
+dwforsec/tools/
+
+Clone tools berikut:
+
+1. Subfinder
+https://github.com/projectdiscovery/subfinder
+
+2. Assetfinder
+https://github.com/tomnomnom/assetfinder
+
+3. HTTPX
+https://github.com/projectdiscovery/httpx
+
+4. Naabu
+https://github.com/projectdiscovery/naabu
+
+5. Nuclei
+https://github.com/projectdiscovery/nuclei
+
+6. Nuclei Templates
+https://github.com/projectdiscovery/nuclei-templates
+
+7. Katana
+https://github.com/projectdiscovery/katana
+
+8. Amass
+https://github.com/owasp-amass/amass
+
+9. WhatWeb
+https://github.com/urbanadventurer/WhatWeb
+
+10. Wafw00f
+https://github.com/EnableSecurity/wafw00f
+
+11. Gau
+https://github.com/lc/gau
+
+12. Waybackurls
+https://github.com/tomnomnom/waybackurls
+
+13. Hakrawler
+https://github.com/hakluke/hakrawler
+
+14. SSLScan
+https://github.com/rbsec/sslscan
+
+15. testssl.sh
+https://github.com/drwetter/testssl.sh
+
+==================================================
+INSTALL SCRIPTS
+==================================================
+
+Buat:
+scripts/install-tools.sh
+scripts/install-tools.ps1
+
+Features:
+- detect OS
+- detect Go
+- detect Python
+- detect Ruby
+- detect Git
+- clone tools
+- pull latest update jika sudah ada
+- build Go tools
+- install dependency
+- verify executable
+- setup permission
+- skip jika sudah installed
+
+==================================================
+CLI COMMANDS
+==================================================
+
+Buat commands:
+
+dwforsec recon example.com
+
+dwforsec scan nuclei example.com
+
+dwforsec scan ssl example.com
+
+dwforsec crawl example.com
+
+dwforsec jsanalyze app.js
+
+dwforsec report generate scan_id
+
+dwforsec report generate scan_id --format html
+
+dwforsec report generate scan_id --format pdf
+
+dwforsec report generate scan_id --format markdown
+
+dwforsec report generate scan_id --format json
+
+dwforsec report generate scan_id --format txt
+
+dwforsec report generate scan_id --all-formats
+
+dwforsec tools install
+
+dwforsec tools update
+
+dwforsec tools status
+
+==================================================
+FULL RECON PIPELINE
+==================================================
+
+Workflow:
+
+target
+↓
+subfinder
+↓
+assetfinder
+↓
+amass
+↓
+httpx
+↓
+naabu
+↓
+nmap
+↓
+whatweb
+↓
+wafw00f
+↓
+katana
+↓
+gau
+↓
+waybackurls
+↓
+hakrawler
+↓
+JavaScript analysis
+↓
+hidden secret detection
+↓
+nuclei
+↓
+sslscan
+↓
+testssl.sh
+↓
+generate report
+
+==================================================
+REAL TOOL EXECUTION
+==================================================
+
+Gunakan:
+asyncio.create_subprocess_exec()
+
+JANGAN:
+- shell=True
+- raw shell injection
+
+Semua subprocess:
+- async
+- timeout
+- streaming stdout/stderr
+- sanitized argument list
+
+==================================================
+TARGET VALIDATION
+==================================================
+
+Karena tools ini digunakan untuk local lab dan internal testing pribadi, jangan blokir localhost atau internal/private IP secara default.
+
+Allowed:
+- localhost
+- 127.0.0.1
+- 0.0.0.0
+- 10.x.x.x
+- 172.16.x.x - 172.31.x.x
+- 192.168.x.x
+- internal domain
+- public domain
+- public IP
+
+Tetap lakukan sanitization untuk mencegah command injection.
+
+Tambahkan optional safety mode:
+
+--public-only
+
+Jika mode ini aktif:
+blokir localhost dan internal/private IP.
+
+==================================================
+CONCURRENCY
+==================================================
+
+Gunakan asyncio untuk:
+- parallel scans
+- concurrent subprocess
+- live progress
+- async file handling
+
+Tambahkan:
+- max concurrency config
+- semaphore
+- timeout config
+
+==================================================
+COMMAND EXECUTION EXAMPLES
+==================================================
+
+subfinder:
+subfinder -d example.com -silent
+
+assetfinder:
+assetfinder --subs-only example.com
+
+httpx:
+httpx -l subdomains.txt -status-code -tech-detect -title
+
+naabu:
+naabu -list live-hosts.txt -top-ports 1000
+
+nmap:
+nmap -sV -Pn -T4 example.com
+
+whatweb:
+whatweb example.com
+
+wafw00f:
+wafw00f https://example.com
+
+katana:
+katana -u https://example.com -jc -silent
+
+gau:
+gau example.com
+
+waybackurls:
+waybackurls example.com
+
+hakrawler:
+hakrawler -url https://example.com -depth 3
+
+nuclei:
+nuclei -u https://example.com -severity low,medium,high,critical -json
+
+sslscan:
+sslscan example.com
+
+testssl.sh:
+testssl.sh https://example.com
+
+==================================================
+JAVASCRIPT / SOURCE CODE ANALYZER
+==================================================
+
+Features:
+- analyze JS/source code
+- detect API keys
+- detect JWT
+- detect Bearer token
+- detect Firebase config
+- detect GraphQL endpoint
+- detect Swagger/OpenAPI
+- detect admin route
+- detect staging URL
+- detect internal IP
+- detect WebSocket endpoint
+- detect S3 bucket URL
+- detect debug keyword
+
+==================================================
+REGEX DETECTION DATABASE
+==================================================
+
+Gunakan:
+data/js_detection_patterns.py
+
+Regex:
+- Google API Key
+- AWS Access Key
+- JWT
+- Bearer token
+- API key assignment
+- Secret assignment
+- Firebase config
+- Stripe key
+- Supabase key
+- GraphQL endpoint
+- Swagger/OpenAPI
+- Admin route
+- staging/dev/uat URL
+- internal IP
+- websocket endpoint
+- cloud storage URL
+- debug keyword
+
+==================================================
+SECRET MASKING
+==================================================
+
+Mask:
+AIzaSy********abcd
+AKIA********ABCD
+
+Tambahkan reveal mode untuk local output.
+
+==================================================
+ROUTE EXTRACTION
+==================================================
+
+Extract:
+- /api/
+- /v1/
+- /v2/
+- /graphql
+- /admin
+- /login
+- /auth
+- /oauth
+- /upload
+- /users
+- /orders
+- /payment
+- /internal
+- /debug
+- /swagger
+- /openapi
+
+==================================================
+SSL/TLS ANALYZER
+==================================================
+
+Detect:
+- TLS version
+- weak ciphers
+- HSTS missing
+- self-signed cert
+- expiry
+- SAN
+- issuer
+- OCSP stapling
+- insecure renegotiation
+- weak protocol
+- certificate mismatch
+
+==================================================
+NUCLEI PARSING
+==================================================
+
+Parse:
+- severity
+- template ID
+- matched URL
+- host
+- description
+- recommendation
+
+==================================================
+TERMINAL DASHBOARD
+==================================================
+
+Saat scan berjalan tampilkan:
+- active tool
+- progress
+- findings count
+- severity count
+- elapsed time
+- discovered hosts
+- live logs
+
+==================================================
+DATABASE
+==================================================
+
+Gunakan SQLite default.
+
+Optional PostgreSQL support.
+
+Store:
+- targets
+- scans
+- findings
+- SSL findings
+- crawl results
+- subdomains
+- technologies
+
+==================================================
+MULTI-FORMAT REPORT EXPORT SYSTEM
+==================================================
+
+Framework harus bisa generate output dalam format:
+
+- HTML
+- Markdown (.md)
+- PDF
+- JSON
+- TXT
+
+Semua report harus tersimpan ke:
+
+outputs/reports/
+
+==================================================
+REPORT NAMING FORMAT
+==================================================
+
+Gunakan naming:
+
+dwforsec-report-{target}-{timestamp}.{ext}
+
+Contoh:
+dwforsec-report-example.com-20260524-183000.pdf
+
+==================================================
+REPORT CONTENT STRUCTURE
+==================================================
+
+Semua format report harus berisi:
+
+1. Cover / Header
+- DWForSec-ReconSuite
+- Target
+- Scan Date
+- Generated Timestamp
+- Scan ID
+- Security Warning
+
+2. Executive Summary
+- Total Subdomains
+- Live Hosts
+- Open Ports
+- Technologies
+- Nuclei Findings
+- SSL Findings
+- Hidden Secrets
+- Critical Findings
+- High Findings
+- Medium Findings
+- Low Findings
+
+3. Recon Summary
+- discovered subdomains
+- live hosts
+- technologies
+- WAF detection
+- open ports
+
+4. Vulnerability Findings
+- nuclei findings
+- severity
+- matched URL
+- description
+- remediation
+
+5. SSL/TLS Findings
+- TLS versions
+- weak ciphers
+- HSTS
+- expiry
+- issuer
+- SAN
+- recommendations
+
+6. Crawling Results
+- crawled URLs
+- JS files
+- source maps
+- admin routes
+- staging URLs
+
+7. JavaScript Exposure Analysis
+- hidden API keys
+- JWT
+- bearer tokens
+- GraphQL endpoints
+- Swagger routes
+- internal IPs
+- WebSocket endpoints
+
+8. Attack Surface Summary
+- APIs
+- admin panels
+- exposed services
+- technologies
+
+9. Commands Executed
+- subfinder
+- nuclei
+- nmap
+- sslscan
+- katana
+- etc
+
+10. Appendix
+- generated timestamp
+- scan duration
+- report generator version
+
+==================================================
+HTML REPORT
+==================================================
+
+Buat HTML report modern dan professional.
+
+Style:
+- dark cyber modern
+- navy/black background
+- glassmorphism
+- severity badges
+- responsive layout
+- modern tables
+- sticky sidebar
+- collapsible findings
+- monospace code blocks
+- export-friendly
+
+Features:
+- severity filter
+- search findings
+- collapsible sections
+- copy buttons
+- smooth scrolling
+- syntax highlight
+
+Gunakan:
+- Jinja2 templates
+- custom CSS
+
+==================================================
+MARKDOWN REPORT
+==================================================
+
+Generate markdown report clean dan GitHub-friendly.
+
+Features:
+- proper headings
+- markdown tables
+- code blocks
+- severity emojis
+- TOC (table of contents)
+
+==================================================
+PDF REPORT
+==================================================
+
+Gunakan:
+- WeasyPrint
+atau
+- ReportLab
+
+Style:
+- professional pentest report
+- dark navy header
+- readable typography
+- severity colors
+- page number
+- table styling
+- clean layout
+
+Features:
+- cover page
+- clickable TOC
+- syntax highlighted findings
+- tables
+- page footer
+- page break handling
+
+==================================================
+JSON EXPORT
+==================================================
+
+JSON harus structured dan machine-readable.
+
+Structure:
+{
+  "target": "",
+  "scan_id": "",
+  "summary": {},
+  "subdomains": [],
+  "ports": [],
+  "findings": [],
+  "ssl_findings": [],
+  "crawl_results": [],
+  "js_analysis": []
+}
+
+==================================================
+TXT REPORT
+==================================================
+
+TXT report:
+- terminal friendly
+- readable monospace layout
+- ASCII section separator
+- aligned columns
+
+==================================================
+SEVERITY COLORS
+==================================================
+
+critical = red
+high = orange
+medium = yellow
+low = blue
+info = gray
+
+==================================================
+REPORT CONFIGURATION
+==================================================
+
+Tambahkan config:
+
+REPORT_OUTPUT_DIR=
+REPORT_THEME=
+DEFAULT_REPORT_FORMAT=
+MASK_SECRETS=true
+
+==================================================
+OUTPUT DIRECTORY
+==================================================
+
+outputs/
+├── scans/
+├── reports/
+│   ├── html/
+│   ├── pdf/
+│   ├── markdown/
+│   ├── json/
+│   └── txt/
+│
+├── logs/
+└── temp/
+
+==================================================
+LOGGING
+==================================================
+
+Gunakan loguru.
+
+Features:
+- colored logs
+- debug mode
+- error logging
+- file logs
+- scan logs
+- structured logging
+
+==================================================
+README
+==================================================
+
+README harus berisi:
+- installation
+- tools setup
+- usage examples
+- CLI screenshots
+- architecture
+- report examples
+- development guide
+- troubleshooting
+- security notes
+
+==================================================
+SECURITY WARNING
+==================================================
+
+Tambahkan warning:
+
+"This framework is intended strictly for authorized security testing on assets you own or have explicit permission to assess."
+
+==================================================
+CODE QUALITY
+==================================================
+
+Pastikan:
+- clean architecture
+- modular services
+- async-first design
+- reusable parser
+- scalable structure
+- proper exception handling
+- docstrings
+- type hints
+- production-ready code
+- clean CLI UX
+
+==================================================
+OUTPUT
+==================================================
+
+Generate:
+- seluruh source code Python
+- CLI commands
+- services
+- parser
+- analyzer
+- subprocess runner
+- report generator
+- HTML templates
+- CSS styling
+- install scripts
+- requirements.txt
+- pyproject.toml
+- README.md
+
+Project harus bisa dijalankan dengan:
+
+pip install -r requirements.txt
+
+lalu:
+
+python -m dwforsec.cli.main recon example.com

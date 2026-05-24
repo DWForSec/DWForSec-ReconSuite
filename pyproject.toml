@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dwforsec-reconsuite"
+version = "1.0.0"
+description = "Offensive reconnaissance & attack surface intelligence framework"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "typer>=0.9.0",
+    "rich>=13.7.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "SQLAlchemy>=2.0.23",
+    "aiofiles>=23.2.1",
+    "httpx>=0.25.0",
+    "loguru>=0.7.2",
+    "Jinja2>=3.1.2",
+    "reportlab>=4.0.8",
+    "cryptography>=41.0.0",
+]
+
+[project.scripts]
+dwforsec = "dwforsec.cli.main:app"
